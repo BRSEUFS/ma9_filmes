@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ma9filmes/app/app_bloc.dart';
+import 'package:ma9filmes/app/app_module.dart';
 import 'package:ma9filmes/app/modules/home/home_bloc.dart';
 import 'package:ma9filmes/app/modules/home/home_module.dart';
 import 'package:ma9filmes/app/modules/movie_categories/movie_categories_module.dart';
@@ -17,13 +19,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-
-
     var size = MediaQuery.of(context).size;
 
     /*24 is for notification bar on Android*/
@@ -31,8 +30,7 @@ class _HomePageState extends State<HomePage> {
     final double itemWidth = size.width / 2;
     final pageController = PageController();
     final bloc = HomeModule.to.getBloc<HomeBloc>();
-
-
+    final blocApp = AppModule.to.getBloc<AppBloc>();
 
     return Scaffold(
 //      appBar: AppBar(
@@ -54,7 +52,6 @@ class _HomePageState extends State<HomePage> {
             title: Text('Movies'),
             activeColor: Colors.red,
             textAlign: TextAlign.center,
-
           ),
           BottomNavyBarItem(
             icon: Icon(Icons.search),
@@ -90,7 +87,8 @@ class _HomePageState extends State<HomePage> {
             child: StreamBuilder<List<FilmeModel>>(
                 stream: bloc.filmes,
                 builder: (context, snapFilmes) {
-                  if (snapFilmes.hasData)
+                  if (snapFilmes.hasData) {
+                    blocApp.setMovies(snapFilmes.data);
                     return GridView.builder(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
@@ -106,10 +104,11 @@ class _HomePageState extends State<HomePage> {
                                 link: snapFilmes.data[index].link,
                                 poster: snapFilmes.data[index].poster,
                                 sinopse: snapFilmes.data[index].sinopse,
-                                sinopseFull: snapFilmes.data[index].sinopseFull),
+                                sinopseFull:
+                                    snapFilmes.data[index].sinopseFull),
                           );
                         });
-                  else
+                  } else
                     return Container();
                 }),
           ),

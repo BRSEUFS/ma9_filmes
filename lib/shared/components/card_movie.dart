@@ -25,7 +25,6 @@ class _CardMovieState extends State<CardMovie> {
       padding: const EdgeInsets.all(5.0),
       child: GestureDetector(
         onTap: () {
-          bloc.action();
           Navigator.of(context)
               .push(FadeRoute(page: MovieDetailModule(widget.filme)));
         },
