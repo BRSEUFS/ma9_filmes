@@ -37,14 +37,22 @@ class AppBloc extends BlocBase {
   }
 
   _setGenders() {
-    final seen = Set<String>();
     List<String> list = [];
     for (var movie in _movies.value) {
       List<String> categoriesSplit = movie.genero.split(',');
 
       if (categoriesSplit.isNotEmpty) {
         list = _genders.value== null?[]: _genders.value;
-        list.addAll(categoriesSplit);
+
+
+        for(var category in categoriesSplit){
+          if(!list.contains(category.replaceAll(' ', ''))){
+            list.add(category.replaceAll(' ', ''));
+          }
+        }
+
+        list.sort((a, b) => a.toString().compareTo(b.toString()));
+
         _genders.add(list);
       }
     }
@@ -53,20 +61,6 @@ class AppBloc extends BlocBase {
   cleanSeach() {
     _movieTitleText.add('');
     _searchResultMovies.add([]);
-  }
-
-  void uniqifyList(List<dynamic> list) {
-    for (int i = 0; i < list.length; i++) {
-      dynamic o = list[i];
-      int index;
-      // Remove duplicates
-      do {
-        index = list.indexOf(o, i+1);
-        if (index != -1) {
-          list.removeRange(index, 1);
-        }
-      } while (index != -1);
-    }
   }
 
   @override
