@@ -14,12 +14,21 @@ dependencies:
   hive_flutter: ^0.3.0+2
   cached_network_image: ^2.2.0+1
   font_awesome_flutter: ^8.8.1
+  path_provider: ^1.6.11
+  loading_animations: ^2.1.0
+  flutter_launcher_icons: ^0.7.3
 
   flutter:
     sdk: flutter
 
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/app.png"
+
 dev_dependencies:
   mockito: ^4.1.1
+  analyzer: 0.39.12
   hive_generator: ^0.7.0+2
   build_runner: ^1.10.0
   flutter_test:
