@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animations/loading_animations.dart';
 import 'package:ma9filmes/app/app_bloc.dart';
 import 'package:ma9filmes/app/app_module.dart';
-import 'package:ma9filmes/app/modules/home/home_bloc.dart';
-import 'package:ma9filmes/app/modules/home/home_module.dart';
 import 'package:ma9filmes/app/modules/movie_categories/movie_categories_module.dart';
 import 'package:ma9filmes/app/modules/movie_favorites/movie_favorites_module.dart';
 import 'package:ma9filmes/app/modules/search/search_module.dart';
@@ -29,54 +28,69 @@ class _HomePageState extends State<HomePage> {
     final double itemHeight = (size.height - kToolbarHeight - 300) / 2;
     final double itemWidth = size.width / 2;
     final pageController = PageController();
-    final bloc = HomeModule.to.getBloc<HomeBloc>();
-    final blocApp = AppModule.to.getBloc<AppBloc>();
+    final bloc = AppModule.to.getBloc<AppBloc>();
 
     return Scaffold(
 //      appBar: AppBar(
 //        title: Text(widget.title),
 //      ),
-      bottomNavigationBar: BottomNavyBar(
-        selectedIndex: currentIndex,
-        showElevation: false,
-        itemCornerRadius: 25,
-        curve: Curves.easeInBack,
-        backgroundColor: Colors.black54,
-        onItemSelected: (index) => setState(() {
-          currentIndex = index;
-          pageController.jumpToPage(index);
-        }),
-        items: [
-          BottomNavyBarItem(
-            icon: Icon(Icons.apps),
-            title: Text('Movies'),
-            activeColor: Colors.red,
-            textAlign: TextAlign.center,
-          ),
-          BottomNavyBarItem(
-            icon: Icon(Icons.search),
-            title: Text('Search'),
-            activeColor: Colors.purpleAccent,
-            textAlign: TextAlign.center,
-          ),
-          BottomNavyBarItem(
-            icon: Icon(Icons.favorite),
-            title: Text(
-              'Categories',
-            ),
-            activeColor: Colors.pink,
-            textAlign: TextAlign.center,
-          ),
-          BottomNavyBarItem(
-            icon: Icon(Icons.favorite),
-            title: Text(
-              'Favorites',
-            ),
-            activeColor: Colors.pink,
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+      bottomNavigationBar: StreamBuilder<bool>(
+          stream: bloc.isLoading,
+          initialData: true,
+          builder: (context, snapshot) {
+            if (snapshot.data == false)
+              return BottomNavyBar(
+                selectedIndex: currentIndex,
+                showElevation: false,
+                itemCornerRadius: 25,
+                curve: Curves.easeInBack,
+                backgroundColor: Colors.black54,
+                onItemSelected: (index) => setState(() {
+                  currentIndex = index;
+                  pageController.jumpToPage(index);
+                }),
+                items: [
+                  BottomNavyBarItem(
+                    icon: Icon(Icons.apps),
+                    title: Text('Movies'),
+                    activeColor: Colors.red,
+                    textAlign: TextAlign.center,
+                  ),
+                  BottomNavyBarItem(
+                    icon: Icon(Icons.search),
+                    title: Text('Search'),
+                    activeColor: Colors.purpleAccent,
+                    textAlign: TextAlign.center,
+                  ),
+                  BottomNavyBarItem(
+                    icon: Icon(Icons.list),
+                    title: Text(
+                      'Categories',
+                    ),
+                    activeColor: Colors.blue,
+                    textAlign: TextAlign.center,
+                  ),
+                  BottomNavyBarItem(
+                    icon: Icon(Icons.favorite),
+                    title: Text(
+                      'Favorites',
+                    ),
+                    activeColor: Colors.pink,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              );
+            else
+              return Container(
+                color: Colors.black87,
+                height: MediaQuery.of(context).size.height,
+                alignment: Alignment.center,
+                child: LoadingBouncingGrid.square(
+                  inverted: true,
+                  backgroundColor: Colors.blue,
+                ),
+              );
+          }),
       body: PageView(
         controller: pageController,
         physics: NeverScrollableScrollPhysics(),
@@ -85,10 +99,9 @@ class _HomePageState extends State<HomePage> {
             height: double.infinity,
             color: Colors.black87,
             child: StreamBuilder<List<FilmeModel>>(
-                stream: bloc.filmes,
+                stream: bloc.movies,
                 builder: (context, snapFilmes) {
                   if (snapFilmes.hasData) {
-                    blocApp.setMovies(snapFilmes.data);
                     return GridView.builder(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
@@ -97,6 +110,7 @@ class _HomePageState extends State<HomePage> {
                         itemCount: snapFilmes.data.length,
                         itemBuilder: (BuildContext context, int index) {
                           return CardMovie(
+                            index: index,
                             filme: FilmeModel(
                                 titulo: snapFilmes.data[index].titulo,
                                 genero: snapFilmes.data[index].genero,
@@ -104,8 +118,8 @@ class _HomePageState extends State<HomePage> {
                                 link: snapFilmes.data[index].link,
                                 poster: snapFilmes.data[index].poster,
                                 sinopse: snapFilmes.data[index].sinopse,
-                                sinopseFull:
-                                    snapFilmes.data[index].sinopseFull),
+                                sinopseFull: snapFilmes.data[index].sinopseFull,
+                                favorite: snapFilmes.data[index].favorite),
                           );
                         });
                   } else

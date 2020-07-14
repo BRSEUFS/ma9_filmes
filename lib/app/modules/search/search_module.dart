@@ -1,13 +1,10 @@
-import 'package:ma9filmes/app/modules/search/search_bloc.dart';
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
 import 'package:ma9filmes/app/modules/search/search_page.dart';
 
 class SearchModule extends ModuleWidget {
   @override
-  List<Bloc> get blocs => [
-        Bloc((i) => SearchBloc()),
-      ];
+  List<Bloc> get blocs => [];
 
   @override
   List<Dependency> get dependencies => [];

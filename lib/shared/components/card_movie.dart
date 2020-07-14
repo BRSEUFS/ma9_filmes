@@ -8,10 +8,10 @@ import 'package:ma9filmes/shared/components/routes/fade_route.dart';
 import 'package:ma9filmes/shared/models/filme_model.dart';
 
 class CardMovie extends StatefulWidget {
-  final FilmeModel filme;
-  var favorite;
+  final int index;
+  FilmeModel filme;
 
-  CardMovie({@required this.filme, this.favorite = false});
+  CardMovie({@required this.filme, @required this.index});
 
   @override
   _CardMovieState createState() => _CardMovieState();
@@ -61,7 +61,7 @@ class _CardMovieState extends State<CardMovie> {
                 Positioned(
                   right: 0,
                   child: IconButton(
-                    icon: widget.favorite
+                    icon: widget.filme.favorite
                         ? Icon(
                             FontAwesomeIcons.solidHeart,
                             color: Colors.red,
@@ -70,11 +70,16 @@ class _CardMovieState extends State<CardMovie> {
                             FontAwesomeIcons.heart,
                             color: Colors.white,
                           ),
-                    onPressed: () {
-                      setState(() {
-                        widget.favorite = !widget.favorite;
-                      });
-                      debugPrint('Teste');
+                    onPressed: () async {
+                      if (!widget.filme.favorite)
+                        await bloc.favoriteMovie(
+
+                            context , widget.filme, index: widget.index);
+                      else
+                        await bloc.removeFavoriteMovie(
+                             widget.filme, index: widget.index);
+
+                      setState(() {});
                     },
                   ),
                 )

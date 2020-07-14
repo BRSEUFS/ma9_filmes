@@ -74,7 +74,7 @@ class _CardMovieDetailState extends State<CardMovieDetail> {
                           Text(
                             '${widget.movie.titulo}',
                             style: TextStyle(
-                                color: Color(0xff000000),
+                                color: Color(0xffffffff),
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
                                 letterSpacing: -0.12),
@@ -85,7 +85,7 @@ class _CardMovieDetailState extends State<CardMovieDetail> {
                           Text(
                             'Ano ${widget.movie.data.split('/')[2]}',
                             style: TextStyle(
-                                color: Color(0xff787878),
+                                color: Color(0xccffffff),
                                 fontSize: 9,
                                 letterSpacing: -0.1),
                           ),
@@ -95,7 +95,7 @@ class _CardMovieDetailState extends State<CardMovieDetail> {
                           Text(
                             '${widget.movie.genero}',
                             style: TextStyle(
-                                color: Color(0xff787878),
+                                color: Color(0xccffffff),
                                 fontSize: 9,
                                 letterSpacing: -0.1),
                           ),
@@ -110,7 +110,7 @@ class _CardMovieDetailState extends State<CardMovieDetail> {
               height: 15,
             ),
             Container(
-              color: Colors.grey[200],
+              color: Colors.grey[100],
               height: 1,
               width: MediaQuery.of(context).size.width * .7,
             )

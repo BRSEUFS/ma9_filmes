@@ -1,13 +1,10 @@
-import 'package:ma9filmes/app/modules/movie_favorites/movie_favorites_bloc.dart';
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
 import 'package:ma9filmes/app/modules/movie_favorites/movie_favorites_page.dart';
 
 class MovieFavoritesModule extends ModuleWidget {
   @override
-  List<Bloc> get blocs => [
-        Bloc((i) => MovieFavoritesBloc()),
-      ];
+  List<Bloc> get blocs => [];
 
   @override
   List<Dependency> get dependencies => [];

@@ -1,7 +1,10 @@
 import 'package:hive/hive.dart';
 
+part 'filme_model.g.dart';
+
 @HiveType(typeId: 0)
-class FilmeModel {
+class FilmeModel extends HiveObject{
+
   @HiveField(0)
   String data;
 
@@ -23,6 +26,9 @@ class FilmeModel {
   @HiveField(6)
   String titulo;
 
+  @HiveField(7)
+  bool favorite;
+
   FilmeModel(
       {this.data,
       this.genero,
@@ -30,7 +36,8 @@ class FilmeModel {
       this.poster,
       this.sinopse,
       this.sinopseFull,
-      this.titulo});
+      this.titulo,
+      this.favorite = false});
 
   FilmeModel.fromJson(Map<String, dynamic> json) {
     data = json['data'];
@@ -40,6 +47,7 @@ class FilmeModel {
     sinopse = json['sinopse'];
     sinopseFull = json['sinopseFull'];
     titulo = json['titulo'];
+    favorite = false;
   }
 
   Map<String, dynamic> toJson() {

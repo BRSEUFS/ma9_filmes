@@ -4,10 +4,10 @@ import 'package:ma9filmes/shared/custom_dio/CustomDio.dart';
 import 'package:ma9filmes/shared/models/filme_model.dart';
 import 'package:ma9filmes/shared/models/response_model.dart';
 
-class FilmeRepository extends Disposable {
+class AppRepository extends Disposable {
   final CustomDio _client;
 
-  FilmeRepository(this._client);
+  AppRepository(this._client);
 
   Future<ResponseModel> getFilmes() async {
     var response;
