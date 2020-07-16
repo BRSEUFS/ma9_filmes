@@ -1,31 +1,33 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ma9filmes/shared/custom_dio/CustomDio.dart';
+import 'package:ma9filmes/shared/models/response_model.dart';
 import 'package:mockito/mockito.dart';
 import 'package:dio/dio.dart';
 
 import 'package:ma9filmes/app/app_repository.dart';
 
-class MockClient extends Mock implements Dio {}
+class MockClient extends Mock implements CustomDio {}
 
 void main() {
   AppRepository repository;
-  // MockClient client;
+  MockClient client;
 
   setUp(() {
-    // repository = AppRepository();
-    // client = MockClient();
+    client = MockClient();
+    repository = AppRepository(client);
   });
 
   group('AppRepository Test', () {
-    //  test("First Test", () {
-    //    expect(repository, isInstanceOf<AppRepository>());
-    //  });
+    test("First Test", () {
+      expect(repository, isInstanceOf<AppRepository>());
+    });
 
     test('returns a Post if the http call completes successfully', () async {
-      //    when(client.get('https://jsonplaceholder.typicode.com/posts/1'))
-      //        .thenAnswer((_) async =>
-      //            Response(data: {'title': 'Test'}, statusCode: 200));
-      //    Map<String, dynamic> data = await repository.fetchPost(client);
-      //    expect(data['title'], 'Test');
+      when(client.get('https://jsonplaceholder.typicode.com/posts/1'))
+          .thenAnswer(
+              (_) async => Response(data: {'title': 'Test'}, statusCode: 200));
+      ResponseModel data = await repository.getFilmes();
+      expect(data.data['title'], 'Test');
     });
   });
 }

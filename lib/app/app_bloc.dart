@@ -12,10 +12,10 @@ import 'app_repository.dart';
 
 class AppBloc extends BlocBase {
   final _movies = BehaviorSubject<List<FilmeModel>>();
-  final _moviesFavorites = BehaviorSubject<List<FilmeModel>>();
+  final _moviesFavorites = BehaviorSubject<List<FilmeModel>>.seeded([]);
   final _searchResultMovies = BehaviorSubject<List<FilmeModel>>();
   final _genderResultMovies = BehaviorSubject<List<FilmeModel>>();
-  final _genders = BehaviorSubject<List<String>>();
+  final _categories = BehaviorSubject<List<String>>();
   final _movieTitleText = BehaviorSubject<String>();
   final _isLoading = BehaviorSubject<bool>();
 
@@ -25,20 +25,17 @@ class AppBloc extends BlocBase {
   Stream<List<FilmeModel>> get moviesFavorites => _moviesFavorites.stream;
   Stream<List<FilmeModel>> get searchResultMovies => _searchResultMovies.stream;
   Stream<List<FilmeModel>> get genderResultMovies => _genderResultMovies.stream;
-  Stream<List<String>> get genders => _genders.stream;
+  Stream<List<String>> get categories => _categories.stream;
   Stream<String> get movieTitleText => _movieTitleText.stream;
   Stream<bool> get isLoading => _isLoading.stream;
-
-  bool _canFavorite = true;
 
   AppBloc(this._repo) {
     _getData();
   }
 
   _getData() async {
-    await _getFilmes();
     await _loadfavoritesMovies();
-    await _setMovies();
+    await _getFilmes();
   }
 
   _getFilmes() async {
@@ -47,6 +44,8 @@ class AppBloc extends BlocBase {
 
     if (response.sucess) {
       _movies.add(response.data);
+      _setCategories();
+      await _setMovies();
     } else {
       _movies.addError(response.errors);
     }
@@ -73,8 +72,6 @@ class AppBloc extends BlocBase {
     } else {
       _movies.add(movies);
     }
-
-    _setGenders();
   }
 
   searchMovies(String title) {
@@ -89,19 +86,16 @@ class AppBloc extends BlocBase {
         _searchResultMovies.add(filtedList);
       else
         cleanSeach();
-    } else {
-      _searchResultMovies
-          .addError('Não foi possivel carregar o resultado da busca');
     }
   }
 
-  _setGenders() {
+  _setCategories() {
     List<String> list = [];
     for (var movie in _movies.value) {
       List<String> categoriesSplit = movie.genero.split(',');
 
       if (categoriesSplit.isNotEmpty) {
-        list = _genders.value == null ? [] : _genders.value;
+        list = _categories.value == null ? [] : _categories.value;
 
         for (var category in categoriesSplit) {
           if (!list.contains(category.replaceAll(' ', ''))) {
@@ -111,7 +105,7 @@ class AppBloc extends BlocBase {
 
         list.sort((a, b) => a.toString().compareTo(b.toString()));
 
-        _genders.add(list);
+        _categories.add(list);
       }
     }
   }
@@ -139,8 +133,8 @@ class AppBloc extends BlocBase {
 
   favoriteMovie(BuildContext context, FilmeModel movie, {int index}) async {
     var dir = await getApplicationDocumentsDirectory();
-
     Hive.init(dir.path);
+    var box = await Hive.openBox<List<FilmeModel>>('ma9filmes');
 
     List<FilmeModel> movies = _movies.value != null ? _movies.value : [];
     List<FilmeModel> favorites =
@@ -152,18 +146,12 @@ class AppBloc extends BlocBase {
       if (favorites.length < 3) {
         movie.favorite = true;
         movies[index] = movie;
-        var box = await Hive.openBox<List<FilmeModel>>('ma9filmes');
 
         favorites.add(movie);
-
-        if(favorites.length == 3){
-          _canFavorite = false;
-        }
 
         _movies.add(movies);
         _moviesFavorites.add(favorites);
         await box.put('favorites', favorites);
-        await _loadfavoritesMovies();
 
         snackBar =
             SnackBar(content: Text('Você favoritou ${movies[index].titulo}'));
@@ -179,35 +167,21 @@ class AppBloc extends BlocBase {
         if (favorites.length < 3) {
           movie.favorite = true;
           movies[index] = movie;
-          var box = await Hive.openBox<List<FilmeModel>>('ma9filmes');
 
           favorites.add(movie);
-
-          if(favorites.length == 3){
-            _canFavorite = false;
-          }
 
           _movies.add(movies);
           _moviesFavorites.add(favorites);
           await box.put('favorites', favorites);
-          await _loadfavoritesMovies();
-
-//          snackBar =
-//              SnackBar(content: Text('Você favoritou ${movies[index].titulo}'));
-        } else {
-//          snackBar =
-//              SnackBar(content: Text('Você só pode favoritar 3 filmes!'));
         }
-      } else {
-//        snackBar = SnackBar(content: Text('Não foi possivel realizar ação!'));
       }
     }
   }
 
   removeFavoriteMovie(FilmeModel movie, {int index}) async {
     var dir = await getApplicationDocumentsDirectory();
-
     Hive.init(dir.path);
+    var box = await Hive.openBox<List<FilmeModel>>('ma9filmes');
 
     List<FilmeModel> movies = _movies.value != null ? _movies.value : [];
     List<FilmeModel> favorites =
@@ -222,13 +196,10 @@ class AppBloc extends BlocBase {
       var index = _movies.value.indexWhere((f) => f.titulo == movie.titulo);
       movies[index] = movie;
     }
-    _canFavorite  = true;
-    var box = await Hive.openBox<List<FilmeModel>>('ma9filmes');
 
     _movies.add(movies);
     _moviesFavorites.add(favorites);
     await box.put('favorites', favorites);
-    await _loadfavoritesMovies();
   }
 
   _loadfavoritesMovies() async {
@@ -243,8 +214,29 @@ class AppBloc extends BlocBase {
     _moviesFavorites.add(fs);
   }
 
-  bool canFavorite(){
-    return _canFavorite;
+  addMovie(FilmeModel movie) {
+    List<FilmeModel> movies = _movies.value != null ? _movies.value : [];
+
+    movies.add(movie);
+    _movies.add(movies);
+    _setMovies();
+    _setCategories();
+  }
+
+  addFavoriteMovie(FilmeModel movie) {
+    List<FilmeModel> favorites =
+        _moviesFavorites.value != null ? _moviesFavorites.value : [];
+
+    favorites.add(movie);
+    _moviesFavorites.add(favorites);
+  }
+
+  bool canFavorite() {
+    if (_moviesFavorites.value.length <= 3) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   cleanMoviesByCategory() {
@@ -263,7 +255,7 @@ class AppBloc extends BlocBase {
     _movieTitleText.close();
     _searchResultMovies.close();
     _genderResultMovies.close();
-    _genders.close();
+    _categories.close();
     _isLoading.close();
   }
 }

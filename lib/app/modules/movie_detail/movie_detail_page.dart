@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -23,7 +24,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     Color gradientStart = Colors.transparent;
     Color gradientEnd = Colors.black87;
 
-    final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+    final GlobalKey<ScaffoldState> _scaffoldKey =
+        new GlobalKey<ScaffoldState>();
 
     return Scaffold(
       key: _scaffoldKey,
@@ -42,21 +44,22 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                     height: size.height,
                     alignment: Alignment.topCenter,
                     child: ShaderMask(
-                      shaderCallback: (rect) {
-                        return LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [Colors.black, Colors.transparent],
-                        ).createShader(
-                            Rect.fromLTRB(0, -300, rect.width, rect.height));
-                      },
-                      blendMode: BlendMode.dstIn,
-                      child: Image.network(
-                        widget.filme.poster,
-                        width: size.width,
-                        fit: BoxFit.fitWidth,
-                      ),
-                    ),
+                        shaderCallback: (rect) {
+                          return LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Colors.black, Colors.transparent],
+                          ).createShader(
+                              Rect.fromLTRB(0, -300, rect.width, rect.height));
+                        },
+                        blendMode: BlendMode.dstIn,
+                        child: CachedNetworkImage(
+                          imageUrl: widget.filme.poster,
+                          width: size.width,
+                          fit: BoxFit.fitWidth,
+                          placeholder: (context, url) => Container(),
+                          errorWidget: (context, url, error) => Container(),
+                        )),
                   ),
                   Container(
                     width: size.width,
@@ -139,7 +142,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                                   var snackBar = SnackBar(
                                       content: Text(
                                           'Você só pode favoritar 3 filmes!'));
-                                  _scaffoldKey.currentState.showSnackBar(snackBar);
+                                  _scaffoldKey.currentState
+                                      .showSnackBar(snackBar);
                                 }
 
                                 setState(() {});

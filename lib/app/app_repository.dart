@@ -22,8 +22,7 @@ class AppRepository extends Disposable {
         return ResponseModel(sucess: true, data: filmes);
       }
     } on DioError catch (e) {
-      response = e.error;
-      return response;
+      return ResponseModel(sucess: false, errors: [e.type]);
     }
   }
 

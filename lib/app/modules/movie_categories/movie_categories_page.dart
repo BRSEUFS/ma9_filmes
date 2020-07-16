@@ -34,7 +34,7 @@ class _MovieCategoriesPageState extends State<MovieCategoriesPage> {
               children: <Widget>[
                 Expanded(
                   child: StreamBuilder<List<String>>(
-                      stream: bloc.genders,
+                      stream: bloc.categories,
                       builder: (context, snapshot) {
                         if (snapshot.hasData)
                           return ListView.builder(

@@ -1,3 +1,4 @@
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:ma9filmes/app/app_bloc.dart';
@@ -43,7 +44,7 @@ class _HomePageState extends State<HomePage> {
                 selectedIndex: currentIndex,
                 showElevation: false,
                 itemCornerRadius: 25,
-                curve: Curves.easeInBack,
+                curve: Curves.bounceIn,
                 backgroundColor: Colors.black54,
                 onItemSelected: (index) => setState(() {
                   currentIndex = index;
@@ -101,6 +102,18 @@ class _HomePageState extends State<HomePage> {
             child: StreamBuilder<List<FilmeModel>>(
                 stream: bloc.movies,
                 builder: (context, snapFilmes) {
+                  if (snapFilmes.hasError) {
+                    return Container(
+                      height: 100,
+                      width: 100,
+                      color: Colors.black54,
+                      child: FlareActor("assets/woi_no_connection.flr",
+                          alignment: Alignment.center,
+                          fit: BoxFit.contain,
+                          animation: "idle"),
+                    );
+                  }
+
                   if (snapFilmes.hasData) {
                     return GridView.builder(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
