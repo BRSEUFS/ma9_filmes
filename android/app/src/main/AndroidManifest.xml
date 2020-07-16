@@ -16,7 +16,7 @@
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="ma9filmes"
+        android:label="Ma9 Filmes"
         android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
