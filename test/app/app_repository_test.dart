@@ -23,11 +23,11 @@ void main() {
     });
 
     test('returns a Post if the http call completes successfully', () async {
-      when(client.get('https://jsonplaceholder.typicode.com/posts/1'))
+      when(client.get('https://filmespy.herokuapp.com/api/v1/filmes'))
           .thenAnswer(
-              (_) async => Response(data: {'title': 'Test'}, statusCode: 200));
+              (_) async => Response(data: {'titulo': 'Test'}, statusCode: 200));
       ResponseModel data = await repository.getFilmes();
-      expect(data.data['title'], 'Test');
+      expect(data.data['titulo'], 'Test');
     });
   });
 }
