@@ -8,8 +8,8 @@ class CustomDio extends DioForNative{
 
   CustomDio(){
     options.baseUrl = 'https://filmespy.herokuapp.com/api/v1';
-    options.connectTimeout = 20000; //20s
-    options.receiveTimeout = 3000;
+    options.connectTimeout = 40000; //20s
+    options.receiveTimeout = 6000;
     interceptors.add(CustomIntercetors());
   }
 
